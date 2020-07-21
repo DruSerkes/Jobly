@@ -3,71 +3,69 @@ const router = express.Router();
 const User = require('../models/user');
 const ExpressError = require('../helpers/expressError');
 const jsonschema = require('jsonschema');
-// const addJobSchema = require('../schemas/createJobSchema.json');
-// const updateJobSchema = require('../schemas/updateJobSchema.json');
+// const addUserSchema = require('../schemas/createUserSchema.json');
+// const updateUserSchema = require('../schemas/updateUserSchema.json');
 
-// TODO refactor these routes for users
-
-/** GET /jobs - get all jobs  */
+/** GET /users - get all users  */
 
 router.get('/', async (req, res, next) => {
 	try {
-		const jobs = await Job.getAll();
-		return res.json({ jobs });
+		const users = await User.getAll();
+		return res.json({ users });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** POST /jobs - create a new job */
+/** POST /users - create a new user */
 
 router.post('/', async (req, res, next) => {
 	try {
-		const schema = jsonschema.validate(req.body, addJobSchema);
+		const schema = jsonschema.validate(req.body, addUserSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
-		const job = await Job.create(req.body);
+		const user = await User.create(req.body);
 
-		return res.status(201).json({ job });
+		return res.status(201).json({ user });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** GET /jobs/:id - get a single job  */
+/** GET /users/:username - get a single user  */
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:username', async (req, res, next) => {
 	try {
-		const { id } = req.params;
-		const job = await Job.getById(id);
-		return res.json({ job });
+		const { username } = req.params;
+		const user = await User.getByUsername(username);
+		return res.json({ user });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** PATCH /jobs/:handle - update a job  */
+/** PATCH /users/:username - update a user  */
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:username', async (req, res, next) => {
 	try {
-		const schema = jsonschema.validate(req.body, updateJobSchema);
+		const schema = jsonschema.validate(req.body, updateUserSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
-		const { id } = req.params;
-		const job = await Job.update(req.body, id);
-		return res.json({ job });
+		const { username } = req.params;
+		const user = await User.update(req.body, username);
+		return res.json({ user });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** DELETE /jobs/:id - delete a job  */
+/** DELETE /users/:username - delete a user  */
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:username', (req, res, next) => {
 	try {
-		const { id } = req.params;
-		Job.remove(id);
-		return res.json({ message: 'Job deleted' });
+		const { username } = req.params;
+		User.remove(username);
+		return res.json({ message: 'User deleted' });
 	} catch (e) {
 		return next(e);
 	}
