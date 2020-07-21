@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const companyRoutes = require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
+const userRoutes = require('./routes/users');
 
 const app = express();
 // parse json
@@ -19,6 +20,8 @@ app.use(morgan('tiny'));
 app.use('/companies', companyRoutes);
 // job routes
 app.use('/jobs', jobRoutes);
+// user routes
+app.use('/users', userRoutes);
 
 /** 404 handler */
 
