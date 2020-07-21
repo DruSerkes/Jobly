@@ -1,7 +1,6 @@
 const db = require('../db');
 const ExpressError = require('../helpers/expressError');
 const getSqlParameters = require('../helpers/getSqlParameters');
-const partialUpdate = require('../helpers/partialUpdate');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 
 class Company {
