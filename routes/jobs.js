@@ -3,9 +3,8 @@ const router = express.Router();
 const Job = require('../models/job');
 const ExpressError = require('../helpers/expressError');
 const jsonschema = require('jsonschema');
-// TODO create these 2 schema
-// const addJobSchema = require('../schemas/createJobSchema.json');
-// const updateJobSchema = require('../schemas/updateJobSchema.json');
+const addJobSchema = require('../schemas/createJobSchema.json');
+const updateJobSchema = require('../schemas/updateJobSchema.json');
 
 /** GET /jobs - get all jobs  */
 
@@ -22,11 +21,10 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
 	try {
-		const schema = jsonschema.validate(req.body, addCompanySchema);
+		const schema = jsonschema.validate(req.body, addJobSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
-		const { handle, name } = req.body;
-		const job = await Job.create(handle, name);
+		const job = await Job.create(req.body);
 
 		return res.status(201).json({ job });
 	} catch (e) {

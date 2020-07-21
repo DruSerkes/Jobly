@@ -16,10 +16,12 @@ class Job {
 	static async getAll(params = {}) {
 		if (!Object.entries(params).length) {
 			const results = await db.query(`SELECT company_handle, title FROM jobs`);
+			if (!results.rows.length) throw new ExpressError(`No jobs found`, 404);
 			return results.rows;
 		}
 		const parameters = getSqlParameters('jobs', params);
 		const results = await db.query(`SELECT company_handle, title FROM jobs ${parameters}`);
+		if (!results.rows.length) throw new ExpressError(`No job found`, 404);
 		return results.rows;
 	}
 
@@ -32,9 +34,7 @@ class Job {
 	static async getById(id) {
 		const result = await db.query(`SELECT * FROM jobs WHERE id = $1`, [ id ]);
 
-		if (!result.rows.length) {
-			throw new ExpressError(`No job found with id: ${id}`, 404);
-		}
+		if (!result.rows.length) throw new ExpressError(`No job found with id: ${id}`, 404);
 
 		return result.rows[0];
 	}
@@ -72,7 +72,7 @@ class Job {
 	/** Update a job 
      * 
      * @param {*} items object (req.body) with optional params: title (str), salary (float), equity (float), company_handle (str references companies)
-     * @param id (int) job id
+     * @param {*} id (int) job id
      * 
      * @returns updated job {id, title, salary, equity, company_handle, date_posted} 
      */

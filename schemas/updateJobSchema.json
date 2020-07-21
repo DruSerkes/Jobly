@@ -1,0 +1,56 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema",
+	"$id": "http://example.com/example.json",
+	"type": "object",
+	"title": "The root schema",
+	"description": "The root schema comprises the entire JSON document.",
+	"default": {},
+	"examples": [
+		{
+			"title": "job title",
+			"salary": 100000.0,
+			"equity": 0.05,
+			"company_handle": "example"
+		}
+	],
+	"required": [],
+	"additionalProperties": true,
+	"properties": {
+		"title": {
+			"$id": "#/properties/title",
+			"type": "string",
+			"title": "The title schema",
+			"description": "job title",
+			"default": "",
+			"examples": [ "job title" ],
+			"maxLength": 30,
+			"minLength": 3
+		},
+		"salary": {
+			"$id": "#/properties/salary",
+			"type": "number",
+			"title": "The salary schema",
+			"description": "salary for this job",
+			"default": 0.0,
+			"examples": [ 100000.0 ],
+			"minimum": "15.00"
+		},
+		"equity": {
+			"$id": "#/properties/equity",
+			"type": "number",
+			"title": "The equity schema",
+			"description": "percent equity as a decimal ",
+			"default": 0.0,
+			"examples": [ 0.05 ],
+			"maximum": "0.99"
+		},
+		"company_handle": {
+			"$id": "#/properties/company_handle",
+			"type": "string",
+			"title": "The company_handle schema",
+			"description": "company handle - references a company ",
+			"default": "",
+			"examples": [ "example" ]
+		}
+	}
+}

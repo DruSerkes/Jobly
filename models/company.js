@@ -27,13 +27,15 @@ class Company {
      * @returns a single company from db with matching handle 
      */
 	static async getByHandle(handle) {
-		const result = await db.query(`SELECT * FROM companies WHERE handle ILIKE $1`, [ handle.toLowerCase() ]);
+		const companyResult = await db.query(`SELECT * FROM companies WHERE handle = $1`, [ handle.toLowerCase() ]);
+		if (!companyResult.rows.length) throw new ExpressError(`No company found with handle: ${handle}`, 404);
 
-		if (!result.rows.length) {
-			throw new ExpressError(`No company found with handle: ${handle}`, 404);
-		}
+		const jobResults = await db.query(`SELECT * FROM jobs WHERE company_handle = $1`, [ handle.toLowerCase() ]);
 
-		return result.rows[0];
+		const company = companyResult.rows[0];
+		company.jobs = jobResults.rows;
+
+		return company;
 	}
 
 	/** create a company 
