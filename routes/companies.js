@@ -4,9 +4,9 @@ const Company = require('../models/company');
 
 /** GET /companies - get all companies  */
 
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
 	try {
-		const companies = Company.getAll();
+		const companies = await Company.getAll();
 		return res.json({ companies });
 	} catch (e) {
 		return next(e);
@@ -24,8 +24,11 @@ router.post('/', (req, res, next) => {
 
 /** GET /companies/:handle - get a single company  */
 
-router.get('/:handle', (req, res, next) => {
+router.get('/:handle', async (req, res, next) => {
 	try {
+		const { handle } = req.params;
+		const company = await Company.getByHandle(handle);
+		return res.json({ company });
 	} catch (e) {
 		return next(e);
 	}
