@@ -15,8 +15,11 @@ router.get('/', async (req, res, next) => {
 
 /** POST /companies - create a new company */
 
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
 	try {
+		const { handle, name } = req.body;
+		const company = await Company.create(handle, name);
+		return res.status(201).json({ company });
 	} catch (e) {
 		return next(e);
 	}
