@@ -1,22 +1,21 @@
 /** Express app for jobly. */
 
 const express = require('express');
-
 const ExpressError = require('./helpers/expressError');
-
 const morgan = require('morgan');
-
 const helmet = require('helmet');
+const companyRoutes = require('./routes/companies');
 
 const app = express();
-
+// parse json
 app.use(express.json());
-
 // add helmet
 app.use(helmet());
-
 // add logging system
 app.use(morgan('tiny'));
+
+// company routes
+app.use('/companies', companyRoutes);
 
 /** 404 handler */
 
