@@ -1,4 +1,4 @@
-\c jobly
+\c jobly-test
 DROP TABLE companies;
 
 CREATE TABLE companies
