@@ -39,8 +39,11 @@ router.get('/:handle', async (req, res, next) => {
 
 /** PATCH /companies/:handle - update a company  */
 
-router.patch('/:handle', (req, res, next) => {
+router.patch('/:handle', async (req, res, next) => {
 	try {
+		const { handle } = req.params;
+		const company = await Company.update(req.body, handle.toLowerCase());
+		return res.json({ company });
 	} catch (e) {
 		return next(e);
 	}
