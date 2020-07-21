@@ -19,6 +19,16 @@ class Company {
 		const results = await db.query(`SELECT handle, name FROM companies ${parameters}`);
 		return results.rows;
 	}
+
+	static async getByHandle(handle) {
+		const result = await db.query(`SELECT * FROM companies WHERE handle = $1`, [ handle ]);
+
+		if (!result.rows.length) {
+			throw new ExpressError(`No company found with handle: ${handle}`, 404);
+		}
+
+		return result.rows[0];
+	}
 }
 
 // CREATE TABLE companies
