@@ -3,8 +3,8 @@ const router = express.Router();
 const User = require('../models/user');
 const ExpressError = require('../helpers/expressError');
 const jsonschema = require('jsonschema');
-// const addUserSchema = require('../schemas/createUserSchema.json');
-// const updateUserSchema = require('../schemas/updateUserSchema.json');
+const addUserSchema = require('../schemas/createUserSchema.json');
+const updateUserSchema = require('../schemas/updateUserSchema.json');
 
 /** GET /users - get all users  */
 
