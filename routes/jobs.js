@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Job = require('../models/job');
 const ExpressError = require('../helpers/expressError');
-// const jsonschema = require('jsonschema');
+const jsonschema = require('jsonschema');
+// TODO create these 2 schema
 // const addJobSchema = require('../schemas/createJobSchema.json');
 // const updateJobSchema = require('../schemas/updateJobSchema.json');
-
-// TODO refactor routes to work for jobs
 
 /** GET /jobs - get all jobs  */
 
