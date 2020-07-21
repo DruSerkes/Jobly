@@ -2,7 +2,7 @@ const db = require('../db');
 const ExpressError = require('../helpers/expressError');
 const getSqlParameters = require('../helpers/getSqlParameters');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
-//
+
 class Job {
 	/** get all jobs 
      * 
@@ -10,7 +10,7 @@ class Job {
      * -- search: str 
      * -- min_salary: float 
      * -- min_equity: float
-     * @returns [{handle, title}, ...]
+     * @returns [{company_handle, title}, ...]
      */
 
 	static async getAll(params = {}) {
@@ -23,64 +23,65 @@ class Job {
 		return results.rows;
 	}
 
-	/** get a company by company_handle 
+	/** get a job by id
      * 
-     * @param handle (str) matching company handle
+     * @param id (int) job id
      * 
-     * @returns a single company from db with matching handle 
+     * @returns job {id, title, salary, equity, company_handle, date_posted}  
      */
-	static async getByHandle(handle) {
-		const result = await db.query(`SELECT * FROM jobs WHERE handle ILIKE $1`, [ handle.toLowerCase() ]);
+	static async getById(id) {
+		const result = await db.query(`SELECT * FROM jobs WHERE id = $1`, [ id ]);
 
 		if (!result.rows.length) {
-			throw new ExpressError(`No company found with handle: ${handle}`, 404);
+			throw new ExpressError(`No job found with id: ${id}`, 404);
 		}
 
 		return result.rows[0];
 	}
 
-	/** create a company 
+	/** create a job 
      * 
-     * @param {*} handle (str) company handle
-     * @param {*} name (str) company name
-     * @returns created company from DB
+     * @param {*} jobData (obj) 
+     * - contains title (str), salary (float), equity (float), company_handle (str references companies)
+     * @returns job {id, title, salary, equity, company_handle, date_posted} 
      */
-	static async create(handle, name) {
-		if (!handle || !name) throw new ExpressError('Missing required data', 400);
+	static async create({ title, salary, equity, company_handle }) {
+		if (!title || !salary || !equity || !company_handle) throw new ExpressError('Missing required data', 400);
 
 		const result = await db.query(
-			`INSERT INTO jobs (handle, name)
-            VALUES ($1, $2) RETURNING handle, name`,
-			[ handle.toLowerCase(), name ]
+			`INSERT INTO jobs (title, salary, equity, company_handle)
+            VALUES ($1, $2, $3, $4) RETURNING *`,
+			[ title, salary, equity, company_handle ]
 		);
 		return result.rows[0];
 	}
 
-	/** Remove a company 
+	/** Remove a job 
      * 
-     * @param {*} handle a company handle to identify which company to remove
+     * @param {*} id (int) id to identify which job to remove
      * @returns nothing
      */
-	static async remove(handle) {
-		const result = await db.query(`DELETE FROM jobs WHERE handle=$1 RETURNING handle`, [ handle ]);
+	static async remove(id) {
+		const result = await db.query(`DELETE FROM jobs WHERE id=$1 RETURNING id`, [ id ]);
 
 		if (!result.rows.length) {
-			throw new ExpressError(`Company with handle ${handle} not found`, 404);
+			throw new ExpressError(`Job with id ${id} not found`, 404);
 		}
 	}
 
-	/** Update a company 
+	/** Update a job 
      * 
-     * @param {*} items object (req.body) with optional params: name (str), num_employees (int), description (text), logo_url (text)  
-     * @param {*} handle handle for company to update 
-     * @returns updated company 
+     * @param {*} items object (req.body) with optional params: title (str), salary (float), equity (float), company_handle (str references companies)
+     * @param id (int) job id
+     * 
+     * @returns updated job {id, title, salary, equity, company_handle, date_posted} 
      */
-	static async update(items, handle) {
-		const { query, values } = sqlForPartialUpdate('jobs', items, 'handle', handle);
+	static async update(items, id) {
+		const { query, values } = sqlForPartialUpdate('jobs', items, 'id', id);
 		const result = await db.query(query, values);
-		if (!result.rows.length) throw new ExpressError(`Company not found with handle ${handle}`, 404);
+		if (!result.rows.length) throw new ExpressError(`Job not found with id ${id}`, 404);
 		return result.rows[0];
 	}
 }
 
-module.exports = Company;
+module.exports = Job;
