@@ -37,17 +37,17 @@ CREATE TABLE users
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- INSERT INTO companies
---     (handle, name)
--- VALUES
---     ('lhfh', 'LHFH Records');
+INSERT INTO companies
+    (handle, name)
+VALUES
+    ('lhfh', 'LHFH Records');
 
--- INSERT INTO jobs
---     (title, salary, equity, company_handle)
--- VALUES
---     ('producer', 50.00, 0.1, 'lhfh');
+INSERT INTO jobs
+    (title, salary, equity, company_handle)
+VALUES
+    ('producer', 50.00, 0.1, 'lhfh');
 
--- INSERT INTO users
---     (username, password, first_name, last_name, email)
--- VALUES
---     ('proddy', 'password', 'prod', 'ucer', 'proddy@prod.com');
+INSERT INTO users
+    (username, password, first_name, last_name, email)
+VALUES
+    ('proddy', 'password', 'prod', 'ucer', 'proddy@prod.com');
