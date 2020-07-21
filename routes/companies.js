@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Company = require('../models/company');
+const jsonschema = require('jsonschema');
+const addCompanySchema = require('../schemas/createSchema.json');
+const updateCompanySchema = require('../schemas/updateSchema.json');
+const { json } = require('express');
+const ExpressError = require('../helpers/expressError');
 
 /** GET /companies - get all companies  */
 
@@ -17,8 +22,12 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
 	try {
+		const schema = jsonschema.validate(req.body, addCompanySchema);
+		if (!schema.valid) throw new ExpressError('Invalid data', 400);
+
 		const { handle, name } = req.body;
 		const company = await Company.create(handle, name);
+
 		return res.status(201).json({ company });
 	} catch (e) {
 		return next(e);
@@ -41,6 +50,9 @@ router.get('/:handle', async (req, res, next) => {
 
 router.patch('/:handle', async (req, res, next) => {
 	try {
+		const schema = jsonschema.validate(req.body, updateCompanySchema);
+		if (!schema.valid) throw new ExpressError('Invalid data', 400);
+
 		const { handle } = req.params;
 		const company = await Company.update(req.body, handle.toLowerCase());
 		return res.json({ company });

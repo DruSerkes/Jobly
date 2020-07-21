@@ -13,7 +13,7 @@
 			"logo_url": "http://druserkes.com/images/1.png"
 		}
 	],
-	"required": [ "name", "num_employees", "description", "logo_url" ],
+	"required": [],
 	"additionalProperties": true,
 	"properties": {
 		"name": {
