@@ -22,12 +22,10 @@ class User {
      * @returns {user : {username, first_name, last_name, email, photo_url}}  
      */
 	static async getByUsername(username) {
-		const result = await db.query(
-			`SELECT username, first_name, last_name, email, photo_url, FROM users WHERE username = $1`,
-			[ username ]
-		);
-
+		const result = await db.query(`SELECT * FROM users WHERE username = $1`, [ username ]);
+		console.log(result.rows[0]);
 		if (!result.rows.length) throw new ExpressError(`User not found`, 404);
+		delete result.rows[0].password;
 
 		return result.rows[0];
 	}
@@ -44,7 +42,7 @@ class User {
 
 		const result = await db.query(
 			`INSERT INTO users (username, password, first_name, last_name, email)
-            VALUES ($1, $2, $3, $4) RETURNING username, first_name, last_name, email, photo_url`,
+            VALUES ($1, $2, $3, $4, $5) RETURNING username, first_name, last_name, email, photo_url`,
 			[ username, password, first_name, last_name, email ]
 		);
 		return result.rows[0];
