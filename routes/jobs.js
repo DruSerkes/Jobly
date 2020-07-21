@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Company = require('../models/company');
-const jsonschema = require('jsonschema');
-const addCompanySchema = require('../schemas/createSchema.json');
-const updateCompanySchema = require('../schemas/updateSchema.json');
+const Job = require('../models/job');
 const ExpressError = require('../helpers/expressError');
+// const jsonschema = require('jsonschema');
+// const addJobSchema = require('../schemas/createJobSchema.json');
+// const updateJobSchema = require('../schemas/updateJobSchema.json');
+
+// TODO refactor routes to work for jobs 
 
 /** GET /companies - get all companies  */
 

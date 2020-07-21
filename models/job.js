@@ -1,26 +1,29 @@
 const db = require('../db');
 const ExpressError = require('../helpers/expressError');
-const getSqlParametersJob = require('../helpers/getSqlParametersJob');
+const getSqlParameters = require('../helpers/getSqlParameters');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 //
 class Job {
-	/** get all companies 
+	/** get all jobs 
      * 
-     * @param params (optional) - list of query params: search, min_employees, max_employees 
-     * @returns [{handle, name}, ...] 
+     * @param params (optional) - list of query params: 
+     * -- search: str 
+     * -- min_salary: float 
+     * -- min_equity: float
+     * @returns [{handle, title}, ...]
      */
 
 	static async getAll(params = {}) {
 		if (!Object.entries(params).length) {
-			const results = await db.query(`SELECT handle, name FROM jobs`);
+			const results = await db.query(`SELECT company_handle, title FROM jobs`);
 			return results.rows;
 		}
-		const parameters = getSqlParametersJob(params);
-		const results = await db.query(`SELECT handle, name FROM jobs ${parameters}`);
+		const parameters = getSqlParameters('jobs', params);
+		const results = await db.query(`SELECT company_handle, title FROM jobs ${parameters}`);
 		return results.rows;
 	}
 
-	/** get a company by handle 
+	/** get a company by company_handle 
      * 
      * @param handle (str) matching company handle
      * 

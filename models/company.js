@@ -15,7 +15,7 @@ class Company {
 			const results = await db.query(`SELECT handle, name FROM companies`);
 			return results.rows;
 		}
-		const parameters = getSqlParameters(params);
+		const parameters = getSqlParameters('companies', params);
 		const results = await db.query(`SELECT handle, name FROM companies ${parameters}`);
 		return results.rows;
 	}
