@@ -52,6 +52,25 @@ class Company {
 		);
 		return result.rows[0];
 	}
+
+	static async remove(handle) {
+		const result = await db.query(`DELETE FROM companies WHERE handle=$1 RETURNING handle`, [ handle ]);
+
+		if (!result.rows.length) {
+			throw new ExpressError(`Company with handle ${handle} not found`, 404);
+		}
+	}
+
+	static async update(id, newName, newAge) {
+		const result = await db.query(
+			`UPDATE cats SET name = $1, age = $2
+    WHERE id = $3
+    RETURNING id, name, age`,
+			[ newName, newAge, id ]
+		);
+		if (!result.rows.length) throw new ExpressError('Cat not found', 404);
+		return result.rows[0];
+	}
 }
 
 // CREATE TABLE companies

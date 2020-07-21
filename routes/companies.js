@@ -50,6 +50,9 @@ router.patch('/:handle', (req, res, next) => {
 
 router.delete('/:handle', (req, res, next) => {
 	try {
+		const { handle } = req.params;
+		Company.remove(handle);
+		return res.json({ message: 'Company successfully removed' });
 	} catch (e) {
 		return next(e);
 	}
