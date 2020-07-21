@@ -6,20 +6,20 @@ const ExpressError = require('../helpers/expressError');
 // const addJobSchema = require('../schemas/createJobSchema.json');
 // const updateJobSchema = require('../schemas/updateJobSchema.json');
 
-// TODO refactor routes to work for jobs 
+// TODO refactor routes to work for jobs
 
-/** GET /companies - get all companies  */
+/** GET /jobs - get all jobs  */
 
 router.get('/', async (req, res, next) => {
 	try {
-		const companies = await Company.getAll();
-		return res.json({ companies });
+		const jobs = await Job.getAll();
+		return res.json({ jobs });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** POST /companies - create a new company */
+/** POST /jobs - create a new job */
 
 router.post('/', async (req, res, next) => {
 	try {
@@ -27,48 +27,48 @@ router.post('/', async (req, res, next) => {
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
 		const { handle, name } = req.body;
-		const company = await Company.create(handle, name);
+		const job = await Job.create(handle, name);
 
-		return res.status(201).json({ company });
+		return res.status(201).json({ job });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** GET /companies/:handle - get a single company  */
+/** GET /jobs/:id - get a single job  */
 
-router.get('/:handle', async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
 	try {
-		const { handle } = req.params;
-		const company = await Company.getByHandle(handle);
-		return res.json({ company });
+		const { id } = req.params;
+		const job = await Job.getById(id);
+		return res.json({ job });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** PATCH /companies/:handle - update a company  */
+/** PATCH /jobs/:handle - update a job  */
 
-router.patch('/:handle', async (req, res, next) => {
+router.patch('/:id', async (req, res, next) => {
 	try {
-		const schema = jsonschema.validate(req.body, updateCompanySchema);
+		const schema = jsonschema.validate(req.body, updateJobSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
-		const { handle } = req.params;
-		const company = await Company.update(req.body, handle.toLowerCase());
-		return res.json({ company });
+		const { id } = req.params;
+		const job = await Job.update(req.body, id);
+		return res.json({ job });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** DELETE /companies/:handle - delete a company  */
+/** DELETE /jobs/:id - delete a job  */
 
-router.delete('/:handle', (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
 	try {
-		const { handle } = req.params;
-		Company.remove(handle);
-		return res.json({ message: 'Company successfully removed' });
+		const { id } = req.params;
+		Job.remove(id);
+		return res.json({ message: 'Job deleted' });
 	} catch (e) {
 		return next(e);
 	}
