@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const jwt = require('jsonwebtoken');
 const User = require('./models/user');
+const { ensureCorrectUser, ensureIsAdmin, ensureLoggedIn, authenticateJWT } = require('./middleware/auth');
 const companyRoutes = require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users');
@@ -19,7 +20,9 @@ app.use(helmet());
 // add logging system
 app.use(morgan('tiny'));
 
-// login
+app.use(authenticateJWT);
+
+/** Login returns JWT to user */
 app.post('/login', async (req, res, next) => {
 	try {
 		const { username, password } = req.body;

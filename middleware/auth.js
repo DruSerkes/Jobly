@@ -7,11 +7,11 @@ const { SECRET_KEY } = require('../config');
 
 function authenticateJWT(req, res, next) {
 	try {
-		const tokenFromBody = req.body._token;
-		const payload = jwt.verify(tokenFromBody, SECRET_KEY);
+		const { token } = req.body;
+		const payload = jwt.verify(token, SECRET_KEY);
 		req.user = payload; // create a current user
 		return next();
-	} catch (err) {
+	} catch (e) {
 		return next();
 	}
 }
@@ -40,10 +40,19 @@ function ensureCorrectUser(req, res, next) {
 		return next({ status: 401, message: 'Unauthorized' });
 	}
 }
-// end
+
+function ensureIsAdmin(req, res, next) {
+	try {
+		if (req.user.is_admin) return next();
+		return next({ status: 401, message: 'Unauthorized' });
+	} catch (e) {
+		return next({ status: 401, message: 'Unauthorized' });
+	}
+}
 
 module.exports = {
 	authenticateJWT,
 	ensureLoggedIn,
-	ensureCorrectUser
+	ensureCorrectUser,
+	ensureIsAdmin
 };
