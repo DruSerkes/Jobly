@@ -54,7 +54,9 @@ router.patch('/:handle', ensureIsAdmin, async (req, res, next) => {
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
 		const { handle } = req.params;
-		const company = await Company.update(req.body, handle.toLowerCase());
+		const companyData = req.body;
+		delete companyData.token;
+		const company = await Company.update(companyData, handle.toLowerCase());
 		return res.json({ company });
 	} catch (e) {
 		return next(e);
