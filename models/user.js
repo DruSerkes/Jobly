@@ -2,7 +2,6 @@ const db = require('../db');
 const ExpressError = require('../helpers/expressError');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { BCRYPT_WORK_FACTOR } = require('../config');
 
 class User {
@@ -25,7 +24,6 @@ class User {
      */
 	static async getByUsername(username) {
 		const result = await db.query(`SELECT * FROM users WHERE username = $1`, [ username ]);
-		console.log(result.rows[0]);
 		if (!result.rows.length) throw new ExpressError(`User not found`, 404);
 		delete result.rows[0].password;
 
@@ -99,7 +97,7 @@ class User {
 
 		const user = result.rows[0];
 
-		return bcrypt.compare(password, user.password);
+		return await bcrypt.compare(password, user.password);
 	}
 }
 
