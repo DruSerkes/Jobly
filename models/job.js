@@ -82,6 +82,24 @@ class Job {
 		if (!result.rows.length) throw new ExpressError(`Job not found with id ${id}`, 404);
 		return result.rows[0];
 	}
+
+	/** Updates the state of a job application
+	 * 
+	 * @param {*} state (str) state of this application
+	 * @param {*} id (int) job id
+	 * @returns updated state
+	 */
+	static async changeState(state, id) {
+		// Update the applications table
+		// update the state column where job_id is associated with this job
+		const result = await db.query(
+			`UPDATE applications SET state=$1 
+			WHERE job_id=$2 RETURNING state`,
+			[ state, id ]
+		);
+		const state = result.rows[0];
+		return state;
+	}
 }
 
 module.exports = Job;

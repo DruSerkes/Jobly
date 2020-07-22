@@ -72,4 +72,6 @@ router.delete('/:id', ensureIsAdmin, (req, res, next) => {
 	}
 });
 
+/** POST /jobs/:id/apply -  */
+
 module.exports = router;
