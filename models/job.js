@@ -85,17 +85,18 @@ class Job {
 
 	/** Updates the state of a job application
 	 * 
+	 * @param {*} username (str) username for this user	 
+	 * @param {*} job_id (int) id for this job
 	 * @param {*} state (str) state of this application
-	 * @param {*} id (int) job id
 	 * @returns updated state
 	 */
-	static async changeState(state, id) {
+	static async apply(username, job_id, state) {
 		// Update the applications table
 		// update the state column where job_id is associated with this job
 		const result = await db.query(
-			`UPDATE applications SET state=$1 
-			WHERE job_id=$2 RETURNING state`,
-			[ state, id ]
+			`INSERT INTO applications (username, job_id, state) 
+			VALUES ($1, $2, $3) RETURNING state`,
+			[ username, job_id, state ]
 		);
 		const state = result.rows[0];
 		return state;
