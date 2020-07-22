@@ -7,6 +7,7 @@ const Job = require('../../models/job');
 const Company = require('../../models/company');
 const User = require('../../models/user');
 const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = require('../../config');
 
 let j1;
 let c1;
@@ -31,6 +32,7 @@ describe('Job routes test', () => {
 		j1 = await Job.create(jobData);
 		u1 = await User.create(userData);
 		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
+		User.makeAdmin(u1.username);
 		console.log(j1);
 	});
 

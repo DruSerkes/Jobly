@@ -115,7 +115,11 @@ class User {
 	static async makeAdmin(username) {
 		if (!username) throw new ExpressError('Username required', 400);
 
-		const result = await db.query(`UPDATE users SET is_admin = true WHERE username=$1 RETURNING *`, [ username ]);
+		const result = await db.query(
+			`INSERT INTO users (username, password, first_name, last_name, email, is_admin)
+		VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+			[ username, hashedPassword, first_name, last_name, email, true ]
+		);
 		if (!result.rows.length) throw new ExpressError('User not found', 404);
 	}
 }
