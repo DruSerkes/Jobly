@@ -1,4 +1,5 @@
-\c jobly
+\c
+jobly
 
 DROP TABLE companies
 CASCADE;
@@ -42,12 +43,15 @@ CREATE TABLE users
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TYPE app_state AS ENUM
+('interested', 'applied', 'accepted', 'rejected');
+
 
 CREATE TABLE applications
 (
     username TEXT REFERENCES users(username) ON DELETE CASCADE,
     job_id INT REFERENCES jobs(id) ON DELETE CASCADE,
-    state TEXT NOT NULL,
+    state app_state NOT NULL DEFAULT 'interested',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(username, job_id)
 );
@@ -72,4 +76,4 @@ VALUES
 INSERT INTO applications
     (username, job_id, state)
 VALUES
-    ('proddy', 1, 'Offer Out')
+    ('proddy', 1, 'applied')

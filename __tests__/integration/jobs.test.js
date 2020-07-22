@@ -170,10 +170,10 @@ describe('Job routes test', () => {
 
 	describe('POST /jobs/:id/apply', () => {
 		test('can apply for job', async () => {
-			const response = await request(app).post(`/jobs/${j1.id}/apply`).send({ token: u1Token, state: 'testing' });
+			const response = await request(app).post(`/jobs/${j1.id}/apply`).send({ token: u1Token, state: 'applied' });
 			expect(response.status).toBe(201);
 			expect(response.body).toBeInstanceOf(Object);
-			expect(response.body).toEqual({ message: 'testing' });
+			expect(response.body).toEqual({ message: 'applied' });
 		});
 	});
 });

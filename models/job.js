@@ -92,6 +92,9 @@ class Job {
 	 */
 	static async apply(username, job_id, state) {
 		if (!username || !job_id || !state) throw new ExpressError('Missing required data', 400);
+		const stateOptions = [ 'interested', 'applied', 'accepted', 'rejected' ];
+		if (!stateOptions.includes(state))
+			throw new ExpressError(`Invalid state. Must be 'interested', 'applied', 'accepted', 'rejected'`, 400);
 		const result = await db.query(
 			`INSERT INTO applications (username, job_id, state) 
 			VALUES ($1, $2, $3) RETURNING state`,
