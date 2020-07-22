@@ -127,7 +127,8 @@ class User {
 		VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
 			[ username, hashedPassword, first_name, last_name, email, true ]
 		);
-		if (!result.rows.length) throw new ExpressError('User not found', 404);
+
+		return result.rows[0];
 	}
 }
 

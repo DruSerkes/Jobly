@@ -53,7 +53,9 @@ router.patch('/:id', ensureIsAdmin, async (req, res, next) => {
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
 		const { id } = req.params;
-		const job = await Job.update(req.body, id);
+		const jobData = req.body;
+		delete jobData.token;
+		const job = await Job.update(jobData, id);
 		return res.json({ job });
 	} catch (e) {
 		return next(e);

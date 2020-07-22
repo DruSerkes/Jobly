@@ -27,13 +27,10 @@ describe('Job routes test', () => {
 			last_name  : 'user',
 			email      : 'test@test.com'
 		};
-
+		u1 = await User.makeAdmin(userData);
+		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
 		c1 = await Company.create(companyData.handle, companyData.name);
 		j1 = await Job.create(jobData);
-		u1 = await User.makeAdmin(userData);
-		// TODO update makeAdmin to accept userData instead of user username - then continue refactoring tests until they all pass
-		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
-		console.log(u1);
 	});
 
 	afterAll(async () => {
@@ -42,7 +39,9 @@ describe('Job routes test', () => {
 
 	describe('GET /jobs', () => {
 		test('can get all jobs', async () => {
-			const response = await request(app).get('/jobs');
+			const response = await request(app).get('/jobs').send({
+				token : u1Token
+			});
 			expect(response.status).toBe(200);
 			expect(response.body).toBeInstanceOf(Object);
 			expect(response.body).toEqual({
@@ -58,7 +57,9 @@ describe('Job routes test', () => {
 
 	describe('GET /jobs/:id', () => {
 		test('can get a single job', async () => {
-			const response = await request(app).get(`/jobs/${j1.id}`);
+			const response = await request(app).get(`/jobs/${j1.id}`).send({
+				token : u1Token
+			});
 			expect(response.status).toBe(200);
 			expect(response.body).toBeInstanceOf(Object);
 			expect(response.body).toEqual({
@@ -74,7 +75,9 @@ describe('Job routes test', () => {
 		});
 
 		test('invalid id returns 404', async () => {
-			const response = await request(app).get(`/jobs/0`);
+			const response = await request(app).get(`/jobs/0`).send({
+				token : u1Token
+			});
 			expect(response.status).toBe(404);
 		});
 	});
@@ -103,7 +106,10 @@ describe('Job routes test', () => {
 		});
 
 		test('data with missing fields returns 400 error', async () => {
-			const response = await request(app).post(`/jobs`).send({ title: 'tester2' });
+			const response = await request(app).post(`/jobs`).send({
+				title : 'tester2',
+				token : u1Token
+			});
 			expect(response.status).toBe(400);
 		});
 	});
@@ -136,7 +142,8 @@ describe('Job routes test', () => {
 				title          : 'updater',
 				salary         : 1001,
 				equity         : 0.667,
-				company_handle : 'test'
+				company_handle : 'test',
+				token          : u1Token
 			});
 			expect(response.status).toBe(404);
 		});
@@ -145,15 +152,16 @@ describe('Job routes test', () => {
 			const response = await request(app).patch(`/jobs/${j1.id}`).send({
 				title  : 'updater',
 				salary : '1001',
-				equity : 1
+				equity : 1,
+				token  : u1Token
 			});
 			expect(response.status).toBe(400);
 		});
 	});
 
 	describe('DELETE /jobs/:id', () => {
-		test('can delete a book', async () => {
-			const response = await request(app).delete(`/jobs/${j1.id}`);
+		test('can delete a job', async () => {
+			const response = await request(app).delete(`/jobs/${j1.id}`).send({ token: u1Token });
 			expect(response.status).toBe(200);
 			expect(response.body).toBeInstanceOf(Object);
 			expect(response.body).toEqual({ message: 'Job deleted' });

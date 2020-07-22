@@ -97,7 +97,7 @@ class Job {
 			VALUES ($1, $2, $3) RETURNING state`,
 			[ username, job_id, state ]
 		);
-		const newState = result.rows[0];
+		const newState = result.rows[0].state;
 		return newState;
 	}
 }
