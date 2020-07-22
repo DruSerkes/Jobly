@@ -81,7 +81,8 @@ describe('User routes test', () => {
 					first_name : 'test 2',
 					last_name  : 'user 2',
 					email      : 'test2@test.com',
-					photo_url  : null
+					photo_url  : null,
+					is_admin   : false
 				}
 			});
 		});
