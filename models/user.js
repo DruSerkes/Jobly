@@ -20,7 +20,7 @@ class User {
      * 
      * @param username (str) 
      * 
-     * @returns {user : {username, first_name, last_name, email, photo_url}}  
+     * @returns {user : {username, first_name, last_name, email, photo_url, is_admin, job : { id, title, salary, equity, company_handle, date_posted, state } } }  
      */
 	static async getByUsername(username) {
 		const userResult = await db.query(`SELECT * FROM users WHERE username = $1`, [ username ]);
@@ -46,7 +46,7 @@ class User {
      * 
      * @param {*} userData (obj) 
      * - contains username (str), password (str), first_name (str), last_name (str), email (str unique)
-     * @returns {user : {username, first_name, last_name, email, photo_url} }
+     * @returns {user : {username, first_name, last_name, email, photo_url, is_admin} }
      */
 	static async create({ username, password, first_name, last_name, email }) {
 		if (!username || !password || !first_name || !last_name || !email)
@@ -112,9 +112,16 @@ class User {
 		return await bcrypt.compare(password, user.password);
 	}
 
-	static async makeAdmin(username) {
+	/** Creates an admin user 
+	 * 
+	 * @param {*} userData (obj) 
+	 * - contains username (str), password (str), first_name (str), last_name (str), email (str unique)
+     * @returns {user : {username, first_name, last_name, email, photo_url, is_admin} }
+	 */
+	static async makeAdmin({ username, password, first_name, last_name, email }) {
 		if (!username) throw new ExpressError('Username required', 400);
 
+		const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 		const result = await db.query(
 			`INSERT INTO users (username, password, first_name, last_name, email, is_admin)
 		VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
