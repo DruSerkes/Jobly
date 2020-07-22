@@ -5,17 +5,33 @@ const app = require('../../app');
 const db = require('../../db');
 const Job = require('../../models/job');
 const Company = require('../../models/company');
+const User = require('../../models/user');
+const jwt = require('jsonwebtoken');
 
 let j1;
 let c1;
+let u1;
+let u1Token;
 describe('Job routes test', () => {
 	beforeEach(async () => {
 		await db.query('DELETE FROM companies');
 		await db.query('DELETE FROM jobs');
+		await db.query('DELETE FROM users');
 		const companyData = { handle: 'test', name: 'test corp' };
 		const jobData = { title: 'tester', salary: 100, equity: 0.666, company_handle: 'test' };
+		const userData = {
+			username   : 'testuser',
+			password   : 'testword',
+			first_name : 'test',
+			last_name  : 'user',
+			email      : 'test@test.com'
+		};
+
 		c1 = await Company.create(companyData.handle, companyData.name);
 		j1 = await Job.create(jobData);
+		u1 = await User.create(userData);
+		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
+		console.log(j1);
 	});
 
 	afterAll(async () => {
@@ -67,7 +83,8 @@ describe('Job routes test', () => {
 				title          : 'tester2',
 				salary         : 1001,
 				equity         : 0.667,
-				company_handle : 'test'
+				company_handle : 'test',
+				token          : u1Token
 			});
 			expect(response.status).toBe(201);
 			expect(response.body).toBeInstanceOf(Object);
@@ -95,7 +112,8 @@ describe('Job routes test', () => {
 				title          : 'updater',
 				salary         : 1001,
 				equity         : 0.667,
-				company_handle : 'test'
+				company_handle : 'test',
+				token          : u1Token
 			});
 			expect(response.status).toBe(200);
 			expect(response.body).toBeInstanceOf(Object);
@@ -137,6 +155,15 @@ describe('Job routes test', () => {
 			expect(response.status).toBe(200);
 			expect(response.body).toBeInstanceOf(Object);
 			expect(response.body).toEqual({ message: 'Job deleted' });
+		});
+	});
+
+	describe('POST /jobs/:id/apply', () => {
+		test('can apply for job', async () => {
+			const response = await request(app).post(`/jobs/${j1.id}/apply`).send({ token: u1Token, state: 'testing' });
+			expect(response.status).toBe(201);
+			expect(response.body).toBeInstanceOf(Object);
+			expect(response.body).toEqual({ message: 'testing' });
 		});
 	});
 });

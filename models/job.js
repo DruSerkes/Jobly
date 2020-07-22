@@ -91,15 +91,14 @@ class Job {
 	 * @returns updated state
 	 */
 	static async apply(username, job_id, state) {
-		// Update the applications table
-		// update the state column where job_id is associated with this job
+		if (!username || !job_id || !state) throw new ExpressError('Missing required data', 400);
 		const result = await db.query(
 			`INSERT INTO applications (username, job_id, state) 
 			VALUES ($1, $2, $3) RETURNING state`,
 			[ username, job_id, state ]
 		);
-		const state = result.rows[0];
-		return state;
+		const newState = result.rows[0];
+		return newState;
 	}
 }
 

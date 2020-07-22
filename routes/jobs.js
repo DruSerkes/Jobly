@@ -62,16 +62,28 @@ router.patch('/:id', ensureIsAdmin, async (req, res, next) => {
 
 /** DELETE /jobs/:id - delete a job  */
 
-router.delete('/:id', ensureIsAdmin, (req, res, next) => {
+router.delete('/:id', ensureIsAdmin, async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		Job.remove(id);
+		await Job.remove(id);
 		return res.json({ message: 'Job deleted' });
 	} catch (e) {
 		return next(e);
 	}
 });
 
-/** POST /jobs/:id/apply - update the state of an application for a job */
+/** POST /jobs/:id/apply - apply for a job */
+
+router.post('/:id/apply', ensureLoggedIn, async (req, res, next) => {
+	try {
+		const { id } = req.params;
+		const { username } = req.user;
+		const { state } = req.body;
+		const newState = await Job.apply(username, id, state);
+		return res.status(201).json({ message: newState });
+	} catch (e) {
+		return next(e);
+	}
+});
 
 module.exports = router;

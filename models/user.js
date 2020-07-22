@@ -111,6 +111,13 @@ class User {
 
 		return await bcrypt.compare(password, user.password);
 	}
+
+	static async makeAdmin(username) {
+		if (!username) throw new ExpressError('Username required', 400);
+
+		const result = await db.query(`UPDATE users SET is_admin = true WHERE username=$1 RETURNING *`, [ username ]);
+		if (!result.rows.length) throw new ExpressError('User not found', 404);
+	}
 }
 
 module.exports = User;
