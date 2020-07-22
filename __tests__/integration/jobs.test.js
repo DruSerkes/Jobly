@@ -30,10 +30,10 @@ describe('Job routes test', () => {
 
 		c1 = await Company.create(companyData.handle, companyData.name);
 		j1 = await Job.create(jobData);
-		u1 = await User.create(userData);
+		u1 = await User.makeAdmin(userData);
+		// TODO update makeAdmin to accept userData instead of user username - then continue refactoring tests until they all pass
 		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
-		User.makeAdmin(u1.username);
-		console.log(j1);
+		console.log(u1);
 	});
 
 	afterAll(async () => {
