@@ -1,9 +1,13 @@
 \c jobly
 
-DROP TABLE companies CASCADE;
-DROP TABLE users CASCADE;
-DROP TABLE jobs CASCADE;
-DROP TABLE applications CASCADE;
+DROP TABLE companies
+CASCADE;
+DROP TABLE users
+CASCADE;
+DROP TABLE jobs
+CASCADE;
+DROP TABLE applications
+CASCADE;
 
 
 CREATE TABLE companies
@@ -68,4 +72,4 @@ VALUES
 INSERT INTO applications
     (username, job_id, state)
 VALUES
-    ('proddy', 1, 'NY')
+    ('proddy', 1, 'Offer Out')

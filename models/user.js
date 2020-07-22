@@ -23,11 +23,23 @@ class User {
      * @returns {user : {username, first_name, last_name, email, photo_url}}  
      */
 	static async getByUsername(username) {
-		const result = await db.query(`SELECT * FROM users WHERE username = $1`, [ username ]);
-		if (!result.rows.length) throw new ExpressError(`User not found`, 404);
-		delete result.rows[0].password;
+		const userResult = await db.query(`SELECT * FROM users WHERE username = $1`, [ username ]);
+		if (!userResult.rows.length) throw new ExpressError(`User not found`, 404);
+		const user = userResult.rows[0];
+		delete user.password;
+		const jobResult = await db.query(
+			`SELECT j.id, j.title, j.salary, j.equity, j.company_handle, j.date_posted, a.state FROM jobs AS j
+			JOIN applications AS a
+			ON j.id = a.job_id
+			JOIN users AS u
+			ON u.username = a.username
+			WHERE u.username = $1
+			`,
+			[ user.username ]
+		);
+		user.jobs = jobResult.rows;
 
-		return result.rows[0];
+		return user;
 	}
 
 	/** create a user 
