@@ -8,6 +8,7 @@ const addUserSchema = require('../schemas/createUserSchema.json');
 const updateUserSchema = require('../schemas/updateUserSchema.json');
 const { SECRET_KEY } = require('../config');
 const { ensureCorrectUser } = require('../middleware/auth');
+const { token } = require('morgan');
 
 /** GET /users - get all users  */
 
@@ -55,8 +56,10 @@ router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
 		const schema = jsonschema.validate(req.body, updateUserSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
-		const { username } = req.params;
-		const user = await User.update(req.body, username);
+		const usrname = req.params.username;
+		const { username, first_name, last_name, email, photo_url } = req.body;
+		const items = { username, first_name, last_name, email, photo_url };
+		const user = await User.update(items, usrname);
 		return res.json({ user });
 	} catch (e) {
 		return next(e);

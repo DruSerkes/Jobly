@@ -4,6 +4,8 @@ const request = require('supertest');
 const app = require('../../app');
 const db = require('../../db');
 const User = require('../../models/user');
+const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = require('../../config');
 
 let u1;
 let u1Token;
@@ -17,8 +19,8 @@ describe('User routes test', () => {
 			last_name  : 'user',
 			email      : 'test@test.com'
 		};
-		u1Token = await User.create(userData);
-		u1 = await User.getByUsername('testuser');
+		u1 = await User.create(userData);
+		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
 	});
 
 	afterAll(async () => {
@@ -55,7 +57,8 @@ describe('User routes test', () => {
 					last_name  : 'user',
 					email      : 'test@test.com',
 					photo_url  : null,
-					is_admin   : false
+					is_admin   : false,
+					jobs       : expect.any(Object)
 				}
 			});
 		});
@@ -95,7 +98,8 @@ describe('User routes test', () => {
 				first_name : 'edit',
 				last_name  : 'name',
 				email      : 'edit@test.com',
-				photo_url  : 'https://thisisaurl.com/image.png'
+				photo_url  : 'https://thisisaurl.com/image.png',
+				token      : u1Token
 			});
 			expect(response.status).toBe(200);
 			expect(response.body).toBeInstanceOf(Object);
@@ -111,15 +115,15 @@ describe('User routes test', () => {
 			});
 		});
 
-		test('invalid username returns 404', async () => {
-			const response = await request(app).patch(`/users/invalid`).send({
+		test('update without token returns 401', async () => {
+			const response = await request(app).patch(`/users/${u1.username}`).send({
 				username   : 'testusernameedit',
 				first_name : 'edit',
 				last_name  : 'name',
 				email      : 'edit@test.com',
 				photo_url  : 'https://thisisaurl.com/image.png'
 			});
-			expect(response.status).toBe(404);
+			expect(response.status).toBe(401);
 		});
 
 		test('invalid data returns 400 error', async () => {
@@ -127,15 +131,16 @@ describe('User routes test', () => {
 				username  : 13,
 				last_name : true,
 				email     : 'thisisnotanemail',
-				photo_url : 'isthisaurl?!?!?'
+				photo_url : 'isthisaurl?!?!?',
+				token     : u1Token
 			});
 			expect(response.status).toBe(400);
 		});
 	});
 
 	describe('DELETE /users/:username', () => {
-		test('can delete a book', async () => {
-			const response = await request(app).delete(`/users/${u1.username}`);
+		test('can delete a user', async () => {
+			const response = await request(app).delete(`/users/${u1.username}`).send({ token: u1Token });
 			expect(response.status).toBe(200);
 			expect(response.body).toBeInstanceOf(Object);
 			expect(response.body).toEqual({ message: 'User deleted' });
