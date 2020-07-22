@@ -4,14 +4,24 @@ const request = require('supertest');
 const app = require('../../app');
 const db = require('../../db');
 const User = require('../../models/user');
+const Job = require('../../models/job');
+const Company = require('../../models/company');
+
 const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('../../config');
 
 let u1;
 let u1Token;
+let c1;
+let j1;
 describe('User routes test', () => {
 	beforeEach(async () => {
+		await db.query('DELETE FROM companies');
+		await db.query('DELETE FROM jobs');
 		await db.query('DELETE FROM users');
+		await db.query('DELETE FROM applications');
+		const companyData = { handle: 'test', name: 'test corp' };
+		const jobData = { title: 'tester', salary: 100, equity: 0.666, company_handle: 'test' };
 		const userData = {
 			username   : 'testuser',
 			password   : 'testword',
@@ -19,8 +29,18 @@ describe('User routes test', () => {
 			last_name  : 'user',
 			email      : 'test@test.com'
 		};
-		u1 = await User.create(userData);
+		u1 = await User.makeAdmin(userData);
 		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
+		c1 = await Company.create(companyData.handle, companyData.name);
+		j1 = await Job.create(jobData);
+		// console.log(`u1 ============== ${u1}`);
+	});
+
+	afterEach(async () => {
+		await db.query('DELETE FROM companies');
+		await db.query('DELETE FROM jobs');
+		await db.query('DELETE FROM users');
+		await db.query('DELETE FROM applications');
 	});
 
 	afterAll(async () => {
@@ -57,7 +77,7 @@ describe('User routes test', () => {
 					last_name  : 'user',
 					email      : 'test@test.com',
 					photo_url  : null,
-					is_admin   : false,
+					is_admin   : true,
 					jobs       : expect.any(Object)
 				}
 			});
@@ -72,10 +92,10 @@ describe('User routes test', () => {
 	describe('POST /users', () => {
 		test('can create a user', async () => {
 			const response = await request(app).post(`/users`).send({
-				username   : 'test user 2',
+				username   : 'testuser2',
 				password   : 'testword2',
-				first_name : 'test 2',
-				last_name  : 'user 2',
+				first_name : 'test2',
+				last_name  : 'user2',
 				email      : 'test2@test.com'
 			});
 			expect(response.status).toBe(201);
@@ -110,14 +130,14 @@ describe('User routes test', () => {
 					last_name  : 'name',
 					email      : 'edit@test.com',
 					photo_url  : 'https://thisisaurl.com/image.png',
-					is_admin   : false
+					is_admin   : true
 				}
 			});
 		});
 
 		test('update without token returns 401', async () => {
 			const response = await request(app).patch(`/users/${u1.username}`).send({
-				username   : 'testusernameedit',
+				username   : 'testusernameedit2',
 				first_name : 'edit',
 				last_name  : 'name',
 				email      : 'edit@test.com',

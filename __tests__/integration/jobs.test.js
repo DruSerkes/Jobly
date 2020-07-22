@@ -18,6 +18,8 @@ describe('Job routes test', () => {
 		await db.query('DELETE FROM companies');
 		await db.query('DELETE FROM jobs');
 		await db.query('DELETE FROM users');
+		await db.query('DELETE FROM applications');
+
 		const companyData = { handle: 'test', name: 'test corp' };
 		const jobData = { title: 'tester', salary: 100, equity: 0.666, company_handle: 'test' };
 		const userData = {
@@ -31,6 +33,13 @@ describe('Job routes test', () => {
 		u1Token = jwt.sign({ username: u1.username, is_admin: u1.is_admin }, SECRET_KEY);
 		c1 = await Company.create(companyData.handle, companyData.name);
 		j1 = await Job.create(jobData);
+	});
+
+	afterEach(async () => {
+		await db.query('DELETE FROM companies');
+		await db.query('DELETE FROM jobs');
+		await db.query('DELETE FROM users');
+		await db.query('DELETE FROM applications');
 	});
 
 	afterAll(async () => {
@@ -88,7 +97,7 @@ describe('Job routes test', () => {
 				title          : 'tester2',
 				salary         : 1001,
 				equity         : 0.667,
-				company_handle : 'test',
+				company_handle : c1.handle,
 				token          : u1Token
 			});
 			expect(response.status).toBe(201);
@@ -99,7 +108,7 @@ describe('Job routes test', () => {
 					title          : 'tester2',
 					salary         : 1001,
 					equity         : 0.667,
-					company_handle : 'test',
+					company_handle : c1.handle,
 					date_posted    : expect.any(String)
 				}
 			});
@@ -120,7 +129,7 @@ describe('Job routes test', () => {
 				title          : 'updater',
 				salary         : 1001,
 				equity         : 0.667,
-				company_handle : 'test',
+				company_handle : c1.handle,
 				token          : u1Token
 			});
 			expect(response.status).toBe(200);
@@ -131,7 +140,7 @@ describe('Job routes test', () => {
 					title          : 'updater',
 					salary         : 1001,
 					equity         : 0.667,
-					company_handle : 'test',
+					company_handle : c1.handle,
 					date_posted    : expect.any(String)
 				}
 			});
@@ -142,7 +151,7 @@ describe('Job routes test', () => {
 				title          : 'updater',
 				salary         : 1001,
 				equity         : 0.667,
-				company_handle : 'test',
+				company_handle : c1.handle,
 				token          : u1Token
 			});
 			expect(response.status).toBe(404);
