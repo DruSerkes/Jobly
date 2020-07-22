@@ -45,11 +45,13 @@ class User {
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 		const result = await db.query(
 			`INSERT INTO users (username, password, first_name, last_name, email)
-            VALUES ($1, $2, $3, $4, $5) RETURNING username, first_name, last_name, email, photo_url`,
+            VALUES ($1, $2, $3, $4, $5) RETURNING *`,
 			[ username, hashedPassword, first_name, last_name, email ]
 		);
+		const user = result.rows[0];
+		delete user.password;
 
-		return result.rows[0];
+		return user;
 	}
 
 	/** Remove a user 

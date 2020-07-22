@@ -5,9 +5,11 @@ const ExpressError = require('./helpers/expressError');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const jwt = require('jsonwebtoken');
+const User = require('./models/user');
 const companyRoutes = require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users');
+const { SECRET_KEY } = require('./config');
 
 const app = express();
 // parse json
@@ -20,9 +22,13 @@ app.use(morgan('tiny'));
 // login
 app.post('/login', async (req, res, next) => {
 	try {
-		// authenticate user - if false, return invalid login, 
-		// if true, get the user, store username, is_admin values in a jwt
-		// return the JSON {token} 
+		const { username, password } = req.body;
+		if (!await User.authenticate(username, password)) {
+			return res.status(401).json({ message: 'invalid login' });
+		}
+		const user = await User.getByUsername(username);
+		const token = jwt.sign({ username: user.username, is_admin: user.is_admin }, SECRET_KEY);
+		return res.json({ token });
 	} catch (e) {
 		return next(e);
 	}
