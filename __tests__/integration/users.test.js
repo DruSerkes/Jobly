@@ -6,6 +6,7 @@ const db = require('../../db');
 const User = require('../../models/user');
 
 let u1;
+let u1Token;
 describe('User routes test', () => {
 	beforeEach(async () => {
 		await db.query('DELETE FROM users');
@@ -16,7 +17,8 @@ describe('User routes test', () => {
 			last_name  : 'user',
 			email      : 'test@test.com'
 		};
-		u1 = await User.create(userData);
+		u1Token = await User.create(userData);
+		u1 = await User.getByUsername('testuser');
 	});
 
 	afterAll(async () => {
@@ -76,14 +78,7 @@ describe('User routes test', () => {
 			expect(response.status).toBe(201);
 			expect(response.body).toBeInstanceOf(Object);
 			expect(response.body).toEqual({
-				user : {
-					username   : 'test user 2',
-					first_name : 'test 2',
-					last_name  : 'user 2',
-					email      : 'test2@test.com',
-					photo_url  : null,
-					is_admin   : false
-				}
+				token : expect.any(String)
 			});
 		});
 
