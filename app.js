@@ -18,7 +18,15 @@ app.use(helmet());
 app.use(morgan('tiny'));
 
 // login
-app.post('/login');
+app.post('/login', async (req, res, next) => {
+	try {
+		// authenticate user - if false, return invalid login, 
+		// if true, get the user, store username, is_admin values in a jwt
+		// return the JSON {token} 
+	} catch (e) {
+		return next(e);
+	}
+});
 
 // company routes
 app.use('/companies', companyRoutes);

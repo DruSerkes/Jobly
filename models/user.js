@@ -2,6 +2,7 @@ const db = require('../db');
 const ExpressError = require('../helpers/expressError');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { BCRYPT_WORK_FACTOR } = require('../config');
 
 class User {
@@ -71,9 +72,32 @@ class User {
 	static async update(items, username) {
 		const { query, values } = sqlForPartialUpdate('users', items, 'username', username);
 		const result = await db.query(query, values);
-		if (!result.rows.length) throw new ExpressError(`user not found with username ${username}`, 404);
+		if (!result.rows.length) throw new ExpressError(`User ${username} not found `, 404);
 		delete result.rows[0].password;
 		return result.rows[0];
+	}
+
+	/** Authenticate a user
+	 * 
+	 * @param {*} username (str)
+	 * @param {*} password (str)
+	 * @returns boolean 
+	 */
+	static async authenticate(username, password) {
+		if (!username || !password) throw new ExpressError('Username/Password Required', 400);
+
+		const result = await db.query(
+			`SELECT username, password
+			FROM users 
+			WHERE username = $1`,
+			[ username ]
+		);
+
+		if (!result.rows.length) throw new ExpressError(`User ${username} not found`, 404);
+
+		const user = result.rows[0];
+
+		return bcrypt.compare(password, user.password);
 	}
 }
 
