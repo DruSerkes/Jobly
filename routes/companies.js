@@ -5,10 +5,11 @@ const jsonschema = require('jsonschema');
 const addCompanySchema = require('../schemas/createSchema.json');
 const updateCompanySchema = require('../schemas/updateSchema.json');
 const ExpressError = require('../helpers/expressError');
+const { ensureLoggedIn, ensureIsAdmin } = require('../middleware/auth');
 
 /** GET /companies - get all companies  */
 
-router.get('/', async (req, res, next) => {
+router.get('/', ensureLoggedIn, async (req, res, next) => {
 	try {
 		const companies = await Company.getAll();
 		return res.json({ companies });
@@ -19,7 +20,7 @@ router.get('/', async (req, res, next) => {
 
 /** POST /companies - create a new company */
 
-router.post('/', async (req, res, next) => {
+router.post('/', ensureIsAdmin, async (req, res, next) => {
 	try {
 		const schema = jsonschema.validate(req.body, addCompanySchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
@@ -35,7 +36,7 @@ router.post('/', async (req, res, next) => {
 
 /** GET /companies/:handle - get a single company  */
 
-router.get('/:handle', async (req, res, next) => {
+router.get('/:handle', ensureLoggedIn, async (req, res, next) => {
 	try {
 		const { handle } = req.params;
 		const company = await Company.getByHandle(handle);
@@ -47,7 +48,7 @@ router.get('/:handle', async (req, res, next) => {
 
 /** PATCH /companies/:handle - update a company  */
 
-router.patch('/:handle', async (req, res, next) => {
+router.patch('/:handle', ensureIsAdmin, async (req, res, next) => {
 	try {
 		const schema = jsonschema.validate(req.body, updateCompanySchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
@@ -62,7 +63,7 @@ router.patch('/:handle', async (req, res, next) => {
 
 /** DELETE /companies/:handle - delete a company  */
 
-router.delete('/:handle', (req, res, next) => {
+router.delete('/:handle', ensureIsAdmin, (req, res, next) => {
 	try {
 		const { handle } = req.params;
 		Company.remove(handle);

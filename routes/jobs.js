@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const Job = require('../models/job');
 const ExpressError = require('../helpers/expressError');
+const { ensureLoggedIn, ensureIsAdmin } = require('../middleware/auth');
 const jsonschema = require('jsonschema');
 const addJobSchema = require('../schemas/createJobSchema.json');
 const updateJobSchema = require('../schemas/updateJobSchema.json');
 
 /** GET /jobs - get all jobs  */
 
-router.get('/', async (req, res, next) => {
+router.get('/', ensureLoggedIn, async (req, res, next) => {
 	try {
 		const jobs = await Job.getAll();
 		return res.json({ jobs });
@@ -19,7 +20,7 @@ router.get('/', async (req, res, next) => {
 
 /** POST /jobs - create a new job */
 
-router.post('/', async (req, res, next) => {
+router.post('/', ensureIsAdmin, async (req, res, next) => {
 	try {
 		const schema = jsonschema.validate(req.body, addJobSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
@@ -34,7 +35,7 @@ router.post('/', async (req, res, next) => {
 
 /** GET /jobs/:id - get a single job  */
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', ensureLoggedIn, async (req, res, next) => {
 	try {
 		const { id } = req.params;
 		const job = await Job.getById(id);
@@ -46,7 +47,7 @@ router.get('/:id', async (req, res, next) => {
 
 /** PATCH /jobs/:handle - update a job  */
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', ensureIsAdmin, async (req, res, next) => {
 	try {
 		const schema = jsonschema.validate(req.body, updateJobSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
@@ -61,7 +62,7 @@ router.patch('/:id', async (req, res, next) => {
 
 /** DELETE /jobs/:id - delete a job  */
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', ensureIsAdmin, (req, res, next) => {
 	try {
 		const { id } = req.params;
 		Job.remove(id);

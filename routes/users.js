@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const addUserSchema = require('../schemas/createUserSchema.json');
 const updateUserSchema = require('../schemas/updateUserSchema.json');
 const { SECRET_KEY } = require('../config');
+const { ensureCorrectUser } = require('../middleware/auth');
 
 /** GET /users - get all users  */
 
@@ -49,7 +50,7 @@ router.get('/:username', async (req, res, next) => {
 
 /** PATCH /users/:username - update a user  */
 
-router.patch('/:username', async (req, res, next) => {
+router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
 	try {
 		const schema = jsonschema.validate(req.body, updateUserSchema);
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
@@ -64,7 +65,7 @@ router.patch('/:username', async (req, res, next) => {
 
 /** DELETE /users/:username - delete a user  */
 
-router.delete('/:username', (req, res, next) => {
+router.delete('/:username', ensureCorrectUser, (req, res, next) => {
 	try {
 		const { username } = req.params;
 		User.remove(username);
