@@ -4,6 +4,7 @@ const express = require('express');
 const ExpressError = require('./helpers/expressError');
 const morgan = require('morgan');
 const helmet = require('helmet');
+const jwt = require('jsonwebtoken');
 const companyRoutes = require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users');
@@ -15,6 +16,9 @@ app.use(express.json());
 app.use(helmet());
 // add logging system
 app.use(morgan('tiny'));
+
+// login
+app.post('/login');
 
 // company routes
 app.use('/companies', companyRoutes);
