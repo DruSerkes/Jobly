@@ -1,9 +1,9 @@
 \c jobly
 
-DROP TABLE jobs;
-DROP TABLE companies;
-DROP TABLE users;
-DROP TABLE applications;
+DROP TABLE companies CASCADE;
+DROP TABLE users CASCADE;
+DROP TABLE jobs CASCADE;
+DROP TABLE applications CASCADE;
 
 
 CREATE TABLE companies
@@ -24,7 +24,7 @@ CREATE TABLE jobs
     equity FLOAT NOT NULL CHECK (equity < 1),
     company_handle TEXT REFERENCES companies(handle) ON DELETE CASCADE,
     date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_handle) REFERENCES companies (handle)
+    FOREIGN KEY (company_handle) REFERENCES companies (handle) ON DELETE CASCADE
 );
 
 CREATE TABLE users
@@ -46,7 +46,6 @@ CREATE TABLE applications
     state TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(username, job_id)
-
 );
 
 
