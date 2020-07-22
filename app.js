@@ -14,7 +14,7 @@ const { SECRET_KEY } = require('./config');
 const app = express();
 // parse json
 app.use(express.json());
-// add helmet
+// add basic security
 app.use(helmet());
 // add logging system
 app.use(morgan('tiny'));
@@ -23,9 +23,7 @@ app.use(morgan('tiny'));
 app.post('/login', async (req, res, next) => {
 	try {
 		const { username, password } = req.body;
-		if (!await User.authenticate(username, password)) {
-			return res.status(401).json({ message: 'invalid login' });
-		}
+		if (!await User.authenticate(username, password)) return res.status(401).json({ message: 'invalid login' });
 		const user = await User.getByUsername(username);
 		const token = jwt.sign({ username: user.username, is_admin: user.is_admin }, SECRET_KEY);
 		return res.json({ token });
@@ -34,11 +32,9 @@ app.post('/login', async (req, res, next) => {
 	}
 });
 
-// company routes
+// company, job, user routing
 app.use('/companies', companyRoutes);
-// job routes
 app.use('/jobs', jobRoutes);
-// user routes
 app.use('/users', userRoutes);
 
 /** 404 handler */
