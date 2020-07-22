@@ -1,7 +1,8 @@
 const db = require('../db');
 const ExpressError = require('../helpers/expressError');
-const getSqlParameters = require('../helpers/getSqlParameters');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
+const bcrypt = require('bcrypt');
+const { BCRYPT_WORK_FACTOR } = require('../config');
 
 class User {
 	/** get all users 
@@ -40,11 +41,13 @@ class User {
 		if (!username || !password || !first_name || !last_name || !email)
 			throw new ExpressError('Missing required data', 400);
 
+		const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 		const result = await db.query(
 			`INSERT INTO users (username, password, first_name, last_name, email)
             VALUES ($1, $2, $3, $4, $5) RETURNING username, first_name, last_name, email, photo_url`,
-			[ username, password, first_name, last_name, email ]
+			[ username, hashedPassword, first_name, last_name, email ]
 		);
+
 		return result.rows[0];
 	}
 
