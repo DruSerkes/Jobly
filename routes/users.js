@@ -3,8 +3,10 @@ const router = express.Router();
 const User = require('../models/user');
 const ExpressError = require('../helpers/expressError');
 const jsonschema = require('jsonschema');
+const jwt = require('jsonwebtoken');
 const addUserSchema = require('../schemas/createUserSchema.json');
 const updateUserSchema = require('../schemas/updateUserSchema.json');
+const { SECRET_KEY } = require('../config');
 
 /** GET /users - get all users  */
 
@@ -25,8 +27,9 @@ router.post('/', async (req, res, next) => {
 		if (!schema.valid) throw new ExpressError('Invalid data', 400);
 
 		const user = await User.create(req.body);
+		const token = jwt.sign({ username: user.username, is_admin: user.is_admin }, SECRET_KEY);
 
-		return res.status(201).json({ user });
+		return res.status(201).json({ token });
 	} catch (e) {
 		return next(e);
 	}
