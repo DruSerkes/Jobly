@@ -21,7 +21,7 @@ I had a similar process for every table I would define for this API (companies, 
 4. Update routes for connected tables where necessary. 
 5. Write and run tests 
 
-I handled authorization and authentication with middleware checking for a signed JWT given to the user on login. 
+Authorization and authentication are handled with middleware checking for a signed JWT given to the user on login, and data is validated with JSONSchema upon creation or modification. 
 
 ---
 
