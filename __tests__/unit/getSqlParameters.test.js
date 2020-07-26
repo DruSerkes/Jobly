@@ -1,4 +1,3 @@
-// TODO refactor this test for refactored function
 const getSqlParameters = require('../../helpers/getSqlParameters');
 
 describe('getSqlParameters test', () => {

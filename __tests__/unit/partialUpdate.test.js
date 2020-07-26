@@ -3,7 +3,6 @@ const partialUpdate = require('../../helpers/partialUpdate');
 
 describe('partialUpdate()', () => {
 	it('should generate a proper partial update query with just 1 field', function() {
-		// FIXME: write real tests!
 		const result = partialUpdate(
 			'users',
 			{ happy: true, height: 72, home: 'where the heart is' },
@@ -17,4 +16,7 @@ describe('partialUpdate()', () => {
 		expect(result.values).toBeInstanceOf(Array);
 		expect(result.values).toEqual([ true, 72, 'where the heart is', 'test' ]);
 	});
+
+	// test a bad scenario in addition to good
+	// test an edge case  - code should not break
 });

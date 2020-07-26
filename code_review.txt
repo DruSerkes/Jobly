@@ -1,0 +1,23 @@
+
+TESTING: 
+85% test coverage before pushing code 
+- Ensures you're covering a lot of scenarios - one or two may remain which is ok 
+For every function you should test 
+- Working case 
+- Failing case 
+- Edge case(s)
+
+
+
+SQL DDL: 
+Every table can have 2 columns: created, updated. 
+This provides the developer with more information
+
+
+
+GIT WORKFLOW: 
+When working on a new feature
+- build feature on a new branch 
+- make commits for one thing at a time 
+- when you're ready to merge, squash commits so master stays clean 
+-- learn about this advanced workflow 

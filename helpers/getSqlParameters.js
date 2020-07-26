@@ -30,6 +30,7 @@ function getSqlParameters(table, params) {
 			if (item[0] === 'min_equity') paramList.push(`equity >= ${item[1]}`);
 		}
 	}
+	// create a switch condition insted of if (switch companies/jobs etc)
 	parameters = `WHERE ${paramList.join(' AND ')}`;
 	return parameters;
 }
